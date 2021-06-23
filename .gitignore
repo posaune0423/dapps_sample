@@ -1,0 +1,5 @@
+node_modules
+geth
+history
+geth.log
+keystore
