@@ -2,12 +2,21 @@
   <div>
     <div v-if="store.state.signature">
       <h1 class="my-3">Hi, There !</h1>
-      <p class="my-3">Your Public Address : {{ store.getAccount() }}</p>
-      <p class="my-3">Your Signature : {{ store.getSignature() }}</p>
+      <p class="my-3">
+        <span class="font-weight-bold">Your Public Address : </span>
+        {{ store.getAccount() }}
+      </p>
+      <p class="my-3">
+        <span class="font-weight-bold">Your Signature : </span>
+        {{ store.getSignature() }}
+      </p>
       <v-btn class="my-3" color="primary" @click="ecRecover(store.getSignature())"
         >Recover your address from signature above</v-btn
       >
-      <p v-if="state.recovered_address" class="my-3">{{ state.recovered_address }}</p>
+      <p v-if="state.recovered_address" class="my-3">
+        <span class="font-weight-bold">Your Recovered Address : </span>
+        {{ state.recovered_address }}
+        </p>
     </div>
 
     <div v-else class="text-center">
