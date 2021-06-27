@@ -31,7 +31,6 @@ declare let window: any
 
 export default defineComponent({
   setup() {
-    // provide(AccountKey, AccountStore)
     const router = useRouter()
 
     const store = inject(AccountKey)
