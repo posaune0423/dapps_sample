@@ -74,7 +74,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, onBeforeMount, useRouter } from '@nuxtjs/composition-api'
+import { defineComponent, inject, onBeforeMount, useRouter, watch } from '@nuxtjs/composition-api'
 import Logo from '~/components/Logo.vue'
 import VuetifyLogo from '~/components/VuetifyLogo.vue'
 import { AccountKey } from '~/composables/store/account'
@@ -92,11 +92,14 @@ export default defineComponent({
       throw new Error(`${AccountKey} is not provided`)
     }
 
-    onBeforeMount(() => {
+    const checkIsAuth = (): void => {
       if (!store.state.signature) {
         router.push('/login')
       }
-    })
+    }
+
+    onBeforeMount(checkIsAuth)
+    watch(store.state, checkIsAuth)
 
     return {
       store

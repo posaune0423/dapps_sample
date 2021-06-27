@@ -9,6 +9,7 @@ interface AccountStore {
   getSignature: () => string;
   setAccount: (account: string) => void;
   setSignature: (signature: string) => void;
+  logout: () => void;
 }
 
 const state = reactive({
@@ -27,6 +28,10 @@ const setAccount = (account: string) => {
 const setSignature = (signature: string) => {
   state.signature = signature
 }
+const logout = (): void => {
+  state.account = ''
+  state.signature = ''
+}
 
 export const AccountKey: InjectionKey<AccountStore> = Symbol('AccountKey')
 
@@ -36,4 +41,5 @@ export default {
   getSignature,
   setAccount,
   setSignature,
+  logout
 }
