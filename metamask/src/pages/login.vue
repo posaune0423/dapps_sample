@@ -23,16 +23,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, useRouter, onBeforeMount, watch } from '@nuxtjs/composition-api'
-import Web3 from 'web3'
+import {
+  defineComponent,
+  inject,
+  useRouter,
+  onBeforeMount,
+  watch,
+  useContext
+} from '@nuxtjs/composition-api'
 import { MESSAGE } from '~/utils/const'
 import { AccountKey } from '~/composables/store/account'
-
-declare let window: any
 
 export default defineComponent({
   setup() {
     const router = useRouter()
+    const { $web3 } = useContext()
 
     const store = inject(AccountKey)
     if (!store) {
@@ -46,24 +51,10 @@ export default defineComponent({
     }
 
     const login = async (): Promise<void> => {
-      let web3: Web3 | undefined
-      if (window.ethereum) {
-        web3 = new Web3(window.ethereum)
-        await window.ethereum.enable()
-      } else if (window.web3) {
-        web3 = new Web3(window.web3.currentProvider)
-      } else {
-        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
-      }
-
-      if (!web3) {
-        throw new Error('web3 instance is undifined or invalid value')
-      }
-
-      const account = await web3.eth.getAccounts()
+      const account = await $web3.eth.getAccounts()
       store.setAccount(account[0])
 
-      web3.eth.personal.sign(MESSAGE, store.state.account.toLowerCase(), '').then((res) => {
+      $web3.eth.personal.sign(MESSAGE, store.state.account.toLowerCase(), '').then((res: string) => {
         console.log('Signture : ', res)
         store.setSignature(res)
 
@@ -72,7 +63,7 @@ export default defineComponent({
     }
 
     onBeforeMount(checkIsAuth)
-    watch(store.getAccount, checkIsAuth)
+    watch(store.state, checkIsAuth)
 
     return { login, store }
   }

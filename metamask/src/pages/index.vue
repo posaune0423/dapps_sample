@@ -4,19 +4,19 @@
       <h1 class="my-3">Hi, There !</h1>
       <p class="my-3">
         <span class="font-weight-bold">Your Public Address : </span>
-        {{ store.getAccount() }}
+        {{ store.state.account }}
       </p>
       <p class="my-3">
         <span class="font-weight-bold">Your Signature : </span>
-        {{ store.getSignature() }}
+        {{ store.state.signature }}
       </p>
-      <v-btn class="my-3" color="primary" @click="ecRecover(store.getSignature())"
+      <v-btn class="my-3" color="primary" @click="ecRecover(store.state.signature)"
         >Recover your address from signature above</v-btn
       >
       <p v-if="state.recovered_address" class="my-3">
         <span class="font-weight-bold">Your Recovered Address : </span>
         {{ state.recovered_address }}
-        </p>
+      </p>
     </div>
 
     <div v-else class="text-center">
@@ -37,17 +37,16 @@ import {
   onBeforeMount,
   useRouter,
   watch,
-  reactive
+  reactive,
+  useContext
 } from '@nuxtjs/composition-api'
-import Web3 from 'web3'
 import { MESSAGE } from '~/utils/const'
 import { AccountKey } from '~/composables/store/account'
-
-declare let window: any
 
 export default defineComponent({
   setup() {
     const router = useRouter()
+    const { $web3 } = useContext()
     const state = reactive({
       recovered_address: ''
     })
@@ -57,22 +56,8 @@ export default defineComponent({
       throw new Error(`${AccountKey} is not provided`)
     }
 
-    const ecRecover = async (signature: string): Promise<void> => {
-      let web3: Web3 | undefined
-      if (window.ethereum) {
-        web3 = new Web3(window.ethereum)
-        await window.ethereum.enable()
-      } else if (window.web3) {
-        web3 = new Web3(window.web3.currentProvider)
-      } else {
-        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
-      }
-
-      if (!web3) {
-        throw new Error('web3 instance is undifined or invalid value')
-      }
-
-      web3.eth.personal.ecRecover(MESSAGE, signature).then((res) => {
+    const ecRecover = (signature: string): void => {
+      $web3.eth.personal.ecRecover(MESSAGE, signature).then((res: string) => {
         console.log(res)
         state.recovered_address = res
       })
