@@ -5,8 +5,6 @@ interface AccountStore {
     readonly account: string;
     readonly signature: string;
   };
-  getAccount: () => string;
-  getSignature: () => string;
   setAccount: (account: string) => void;
   setSignature: (signature: string) => void;
   logout: () => void;
@@ -16,12 +14,6 @@ const state = reactive({
   account: '',
   signature: ''
 })
-const getAccount = () => {
-  return state.account
-}
-const getSignature = () => {
-  return state.signature
-}
 const setAccount = (account: string) => {
   state.account = account
 }
@@ -37,8 +29,6 @@ export const AccountKey: InjectionKey<AccountStore> = Symbol('AccountKey')
 
 export default {
   state: readonly(state),
-  getAccount,
-  getSignature,
   setAccount,
   setSignature,
   logout
