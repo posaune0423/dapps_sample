@@ -1,23 +1,23 @@
 <template>
   <div>
-    <div v-if="store.state.signature">
+    <v-container v-if="store.state.signature">
       <h1 class="my-3">Hi, There !</h1>
-      <p class="my-3">
-        <span class="font-weight-bold">Your Public Address : </span>
-        {{ store.state.account }}
+      <p class="font-weight-bold">Your Public Address :</p>
+      <p class="my-3 scrollable pa-1">
+        <code class="font-weight-bold">{{ store.state.account }}</code>
       </p>
-      <p class="my-3">
-        <span class="font-weight-bold">Your Signature : </span>
-        {{ store.state.signature }}
+      <p class="font-weight-bold">Your Signature :</p>
+      <p class="my-3 scrollable pa-1">
+        <code class="font-weight-bold">{{ store.state.signature }}</code>
       </p>
       <v-btn class="my-3" color="primary" @click="ecRecover(store.state.signature)"
-        >Recover your address from signature above</v-btn
+        >Recover your address</v-btn
       >
-      <p v-if="state.recovered_address" class="my-3">
-        <span class="font-weight-bold">Your Recovered Address : </span>
-        {{ state.recovered_address }}
+      <p class="font-weight-bold">Your Recovered Address :</p>
+      <p v-if="state.recovered_address" class="my-3 scrollable pa-1">
+        <code class="font-weight-bold">{{ state.recovered_address }}</code>
       </p>
-    </div>
+    </v-container>
 
     <div v-else class="text-center">
       <v-progress-circular
@@ -80,3 +80,12 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.scrollable {
+  overflow: scroll;
+  overflow-x: auto;
+  color: #efefef;
+  background-color: #364549;
+}
+</style>
