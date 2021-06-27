@@ -1,67 +1,15 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col v-if="store.state.signature" cols="12" sm="8" md="6">
-      <div class="text-center">
-        <logo />
-        <vuetify-logo />
-      </div>
-      <v-card>
-        <v-card-title class="headline"> Welcome to the Vuetify + Nuxt.js template </v-card-title>
-        <v-card-text>
-          <p>
-            Vuetify is a progressive Material Design component framework for Vue.js. It was designed
-            to empower developers to create amazing applications.
-          </p>
-          <p>
-            For more information on Vuetify, check out the
-            <a href="https://vuetifyjs.com" target="_blank" rel="noopener noreferrer">
-              documentation </a
-            >.
-          </p>
-          <p>
-            If you have questions, please join the official
-            <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord </a
-            >.
-          </p>
-          <p>
-            Find a bug? Report it on the github
-            <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board </a
-            >.
-          </p>
-          <p>
-            Thank you for developing with Vuetify and I look forward to bringing more exciting
-            features in the future.
-          </p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3" />
-          <a href="https://nuxtjs.org/" target="_blank" rel="noopener noreferrer">
-            Nuxt Documentation
-          </a>
-          <br />
-          <a href="https://github.com/nuxt/nuxt.js" target="_blank" rel="noopener noreferrer">
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="primary" nuxt to="/inspire"> Continue </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
+  <div>
+    <div v-if="store.state.signature">
+      <h1 class="my-3">Hi, There !</h1>
+      <p class="my-3">Your Public Address : {{ store.getAccount() }}</p>
+      <p class="my-3">Your Signature : {{ store.getSignature() }}</p>
+      <v-btn class="my-3" color="primary" @click="ecRecover(store.getSignature())"
+        >Recover your address from signature above</v-btn
+      >
+      <p v-if="state.recovered_address" class="my-3">{{ state.recovered_address }}</p>
+    </div>
+
     <div v-else class="text-center">
       <v-progress-circular
         indeterminate
@@ -70,26 +18,55 @@
         style="margin: calc(50vh - 120px) auto"
       ></v-progress-circular>
     </div>
-  </v-row>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, onBeforeMount, useRouter, watch } from '@nuxtjs/composition-api'
-import Logo from '~/components/Logo.vue'
-import VuetifyLogo from '~/components/VuetifyLogo.vue'
+import {
+  defineComponent,
+  inject,
+  onBeforeMount,
+  useRouter,
+  watch,
+  reactive
+} from '@nuxtjs/composition-api'
+import Web3 from 'web3'
+import { MESSAGE } from '~/utils/const'
 import { AccountKey } from '~/composables/store/account'
 
+declare let window: any
+
 export default defineComponent({
-  components: {
-    Logo,
-    VuetifyLogo
-  },
   setup() {
     const router = useRouter()
+    const state = reactive({
+      recovered_address: ''
+    })
 
     const store = inject(AccountKey)
     if (!store) {
       throw new Error(`${AccountKey} is not provided`)
+    }
+
+    const ecRecover = async (signature: string): Promise<void> => {
+      let web3: Web3 | undefined
+      if (window.ethereum) {
+        web3 = new Web3(window.ethereum)
+        await window.ethereum.enable()
+      } else if (window.web3) {
+        web3 = new Web3(window.web3.currentProvider)
+      } else {
+        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
+      }
+
+      if (!web3) {
+        throw new Error('web3 instance is undifined or invalid value')
+      }
+
+      web3.eth.personal.ecRecover(MESSAGE, signature).then((res) => {
+        console.log(res)
+        state.recovered_address = res
+      })
     }
 
     const checkIsAuth = (): void => {
@@ -102,7 +79,9 @@ export default defineComponent({
     watch(store.state, checkIsAuth)
 
     return {
-      store
+      store,
+      state,
+      ecRecover
     }
   }
 })

@@ -25,6 +25,7 @@
 <script lang="ts">
 import { defineComponent, inject, useRouter, onBeforeMount, watch } from '@nuxtjs/composition-api'
 import Web3 from 'web3'
+import { MESSAGE } from '~/utils/const'
 import { AccountKey } from '~/composables/store/account'
 
 declare let window: any
@@ -62,14 +63,12 @@ export default defineComponent({
       const account = await web3.eth.getAccounts()
       store.setAccount(account[0])
 
-      web3.eth.personal
-        .sign('ログインテスト', store.state.account.toLowerCase(), '')
-        .then((res) => {
-          console.log('Signture : ', res)
-          store.setSignature(res)
+      web3.eth.personal.sign(MESSAGE, store.state.account.toLowerCase(), '').then((res) => {
+        console.log('Signture : ', res)
+        store.setSignature(res)
 
-          checkIsAuth()
-        })
+        checkIsAuth()
+      })
     }
 
     onBeforeMount(checkIsAuth)
