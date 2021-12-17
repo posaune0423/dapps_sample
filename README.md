@@ -11,7 +11,7 @@
 ```bash
 $ git clone https://github.com/posaune0423/dapps_sample.git
 $ cd eth_testnet
-$ geth  --rpc --rpcport 8545 --rpcapi "web3,eth,net,personal" --rpccorsdomain "*" --rpcaddr "0.0.0.0" --datadir . --nodiscover --networkid 10 console 2>> geth.log
+$ geth --http --http.port 8545 --http.api "web3,eth,net,personal" --http.corsdomain "*" --http.addr "0.0.0.0" --datadir . --nodiscover --networkid 10 console 2>> geth.log
 ```
 
 Now you got ready for developing !
