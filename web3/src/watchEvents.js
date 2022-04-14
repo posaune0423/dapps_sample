@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const Web3 = require("web3");
 const abi = require("./polygonAbi");
 
@@ -10,6 +10,8 @@ const myContract = new web3.eth.Contract(
   process.env.POLYGON_CONTRACT_ADDRESS
 );
 
+let eventBlocks = new Set();
+
 myContract.events
   .allEvents(
     {
@@ -20,7 +22,10 @@ myContract.events
         console.error(error);
       } else {
         console.log("Event Emission here !");
-        console.log({ event });
+        if (!eventBlocks.has(event.blockNumber)) {
+          console.log(event);
+          eventBlocks.add(event.blockNumber);
+        }
       }
     }
   )
